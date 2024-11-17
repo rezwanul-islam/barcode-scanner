@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barcode Scanner</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    #reader {
+      width: 300px;
+      margin: auto;
+    }
+    #result {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Barcode Scanner</h1>
+  <div id="reader"></div>
+  <div id="result">Scanned result will appear here</div>
+
+  <script>
+    const resultDiv = document.getElementById("result");
+
+    function onScanSuccess(decodedText) {
+      resultDiv.innerHTML = `Scanned Code: <b>${decodedText}</b>`;
+    }
+
+    function onScanError(error) {
+      console.warn(`Error scanning: ${error}`);
+    }
+
+    const html5QrCode = new Html5Qrcode("reader");
+
+    Html5Qrcode.getCameras().then(cameras => {
+      if (cameras.length > 0) {
+        const cameraId = cameras[0].id;
+        html5QrCode.start(
+          cameraId,
+          {
+            fps: 10,    // Scans per second
+            qrbox: 250  // Scanner area
+          },
+          onScanSuccess,
+          onScanError
+        );
+      } else {
+        resultDiv.innerHTML = "No cameras found.";
+      }
+    }).catch(err => {
+      resultDiv.innerHTML = `Error: ${err}`;
+    });
+  </script>
+</body>
+</html>
